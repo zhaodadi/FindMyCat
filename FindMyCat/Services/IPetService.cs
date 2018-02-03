@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FindMyCat.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,6 @@ namespace FindMyCat.Services
 {
 	public interface IPetService
 	{
-		void DoNothing();
+		List<PetOwner> GetPetOwners();
 	}
 }

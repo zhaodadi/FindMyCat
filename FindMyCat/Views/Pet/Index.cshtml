@@ -1,3 +1,17 @@
-﻿<div>
-	here it is
+﻿@model IEnumerable<FindMyCat.Models.OwnerGenderPet>
+
+<div>
+    <ul>
+        @foreach (var owner in Model)
+        {
+            <li>@owner.Gender
+                <ul>
+                    @foreach (var pet in owner.Pets)
+                    {
+                        <li>@pet.Name - @pet.Type</li>
+                    }
+                </ul>
+            </li>
+        }
+    </ul>
 </div>
