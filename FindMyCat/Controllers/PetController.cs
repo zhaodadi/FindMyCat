@@ -23,7 +23,6 @@ namespace FindMyCat.Controllers
 		{
             var petsList = await _petService.GetOwnerGenderPet(PetTypes.CAT);
 
-
             return View(petsList);
 		}
 	}

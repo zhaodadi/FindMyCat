@@ -38,6 +38,7 @@ namespace FindMyCat.Services
                             Gender = g.Gender,
                             Pets = g.Pets.OrderBy(p => p.Name).ToList()
                         })
+                        .OrderByDescending(g => g.Gender)
                         .ToList(); // select grouped gender->cats name ordered asc
 
             return filteredPetList;
