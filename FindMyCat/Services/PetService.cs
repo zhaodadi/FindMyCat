@@ -1,4 +1,5 @@
-﻿using FindMyCat.Models;
+﻿using FindMyCat.Caching;
+using FindMyCat.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -9,8 +10,16 @@ using System.Web;
 
 namespace FindMyCat.Services
 {
-	public class PetService : IPetService
-	{
+    public class PetService : IPetService
+    {
+        private readonly ICache _petCache;
+        private readonly string PET_CACHE_KEY = "PetDataCache";
+
+        public PetService()
+        {
+            _petCache = new SystemCache();
+        }
+
         /// <summary>
         /// Get pet of owner grouped by owner's gender
         /// </summary>
@@ -40,25 +49,43 @@ namespace FindMyCat.Services
         /// <returns>list of PetOwner</returns>
         public async Task<List<PetOwner>> GetPetOwners()
         {
-            List<PetOwner> petOwners;
+            if (_petCache.Contains(PET_CACHE_KEY))
+            {
+                //Log.Info("EWINERY DEBUG : returning feed from cache " + feedUrl, this);
+                return _petCache.Get<List<PetOwner>>(PET_CACHE_KEY);
+            }
+
+            // no cache set
+            List<PetOwner> petOwners =  JsonConvert.DeserializeObject<List<PetOwner>>(await this.GetPetData());
+            _petCache.Set(PET_CACHE_KEY, petOwners, 15);
+
+            return await GetPetOwners();
+
+        }
+
+        /// <summary>
+        /// Get source data, ToDo: move to a seprate class
+        /// </summary>
+        /// <returns></returns>
+        private async Task<string> GetPetData()
+        {
+            string response;
 
             HttpClient client = new HttpClient();
 
+            // ToDo: move source url to config
             client.BaseAddress = new Uri("http://agl-developer-test.azurewebsites.net");
 
             try
             {
-                var response = await client.GetStringAsync("people.json");
-
-                petOwners = JsonConvert.DeserializeObject<List<PetOwner>>(response);
+                response = await client.GetStringAsync("people.json");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                petOwners = null;
+                response = string.Empty;
             }
 
-            return petOwners;
-
+            return response;
         }
-	}
+    }
 }
