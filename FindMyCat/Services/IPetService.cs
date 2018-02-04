@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 namespace FindMyCat.Services
 {
 	public interface IPetService
-	{
-		List<PetOwner> GetPetOwners();
+    {
+        Task<List<OwnerGenderPet>> GetOwnerGenderPet(string petType);
+
+        Task<List<PetOwner>> GetPetOwners();
 	}
 }
